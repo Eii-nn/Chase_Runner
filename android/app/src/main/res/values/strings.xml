@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chase Runner</string>
+    <!-- Replace these values with your actual credentials from Google Cloud Console -->
+    <!-- For google_app_id: Use the application ID from your Firebase project settings -->
+    <!-- For default_web_client_id: Use the OAuth client ID from Google Cloud Console -->
+    <string name="google_app_id">REPLACE_WITH_YOUR_GOOGLE_APP_ID</string>
+    <string name="default_web_client_id">REPLACE_WITH_YOUR_OAUTH_CLIENT_ID</string>
+</resources> 

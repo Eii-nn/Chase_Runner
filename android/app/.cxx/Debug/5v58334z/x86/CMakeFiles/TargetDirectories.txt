@@ -1,0 +1,2 @@
+C:/Users/johnv/OneDrive/Documents/GitHub/Gamified/android/app/.cxx/Debug/5v58334z/x86/CMakeFiles/edit_cache.dir
+C:/Users/johnv/OneDrive/Documents/GitHub/Gamified/android/app/.cxx/Debug/5v58334z/x86/CMakeFiles/rebuild_cache.dir
