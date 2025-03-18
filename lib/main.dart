@@ -13,6 +13,8 @@ import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/ai_coach_screen.dart';
+import 'screens/splash_screen.dart';
+import 'screens/email_verification_screen.dart';
 import 'providers/run_provider.dart';
 import 'providers/settings_provider.dart';
 import 'services/auth_service.dart';
@@ -110,7 +112,7 @@ class RunningApp extends StatelessWidget {
         darkTheme: _buildTheme(Brightness.dark),
         themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
-        home: const LoginScreen(),
+        home: const SplashScreen(),
         routes: {
           '/home': (context) => const HomeScreen(),
           '/login': (context) => const LoginScreen(),
@@ -123,6 +125,7 @@ class RunningApp extends StatelessWidget {
           '/history': (context) => const HistoryScreen(),
           '/settings': (context) => const SettingsScreen(),
           '/ai_coach': (context) => const AiCoachScreen(),
+          '/email-verification': (context) => const EmailVerificationScreen(),
         },
       ),
     );

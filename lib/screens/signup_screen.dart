@@ -66,7 +66,7 @@ class _SignupScreenState extends State<SignupScreen>
         _passwordController.text,
       );
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/email-verification');
       }
     } catch (e) {
       setState(() {
@@ -85,13 +85,13 @@ class _SignupScreenState extends State<SignupScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF1976D2), // Medium blue
-              const Color(0xFF0D47A1), // Deep blue
+              Color(0xFF1976D2), // Medium blue
+              Color(0xFF0D47A1), // Deep blue
             ],
           ),
         ),
@@ -108,7 +108,7 @@ class _SignupScreenState extends State<SignupScreen>
                     height: 180,
                     width: 120,
                     alignment: Alignment.center,
-                    child: Icon(
+                    child: const Icon(
                       Icons.directions_run,
                       size: 100,
                       color: Colors.white,
@@ -123,7 +123,7 @@ class _SignupScreenState extends State<SignupScreen>
                 left: 16,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withAlpha(51), // 0.2 * 255 = 51
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -150,7 +150,7 @@ class _SignupScreenState extends State<SignupScreen>
                             const Column(
                               children: [
                                 Text(
-                                  'RUNNING APP',
+                                  'Chase Runner',
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
@@ -182,16 +182,19 @@ class _SignupScreenState extends State<SignupScreen>
                               decoration: InputDecoration(
                                 labelText: 'Email',
                                 labelStyle: TextStyle(
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white
+                                        .withAlpha(204)), // 0.8 * 255 = 204
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white
+                                          .withAlpha(77)), // 0.3 * 255 = 77
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white
+                                          .withAlpha(77)), // 0.3 * 255 = 77
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -199,9 +202,11 @@ class _SignupScreenState extends State<SignupScreen>
                                       const BorderSide(color: Colors.white),
                                 ),
                                 prefixIcon: Icon(Icons.email,
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white
+                                        .withAlpha(204)), // 0.8 * 255 = 204
                                 filled: true,
-                                fillColor: Colors.white.withOpacity(0.1),
+                                fillColor: Colors.white
+                                    .withAlpha(26), // 0.1 * 255 = 26
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -224,16 +229,19 @@ class _SignupScreenState extends State<SignupScreen>
                               decoration: InputDecoration(
                                 labelText: 'Password',
                                 labelStyle: TextStyle(
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white
+                                        .withAlpha(204)), // 0.8 * 255 = 204
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white
+                                          .withAlpha(77)), // 0.3 * 255 = 77
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white
+                                          .withAlpha(77)), // 0.3 * 255 = 77
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -241,9 +249,11 @@ class _SignupScreenState extends State<SignupScreen>
                                       const BorderSide(color: Colors.white),
                                 ),
                                 prefixIcon: Icon(Icons.lock,
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white
+                                        .withAlpha(204)), // 0.8 * 255 = 204
                                 filled: true,
-                                fillColor: Colors.white.withOpacity(0.1),
+                                fillColor: Colors.white
+                                    .withAlpha(26), // 0.1 * 255 = 26
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -266,16 +276,19 @@ class _SignupScreenState extends State<SignupScreen>
                               decoration: InputDecoration(
                                 labelText: 'Confirm Password',
                                 labelStyle: TextStyle(
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white
+                                        .withAlpha(204)), // 0.8 * 255 = 204
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white
+                                          .withAlpha(77)), // 0.3 * 255 = 77
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white
+                                          .withAlpha(77)), // 0.3 * 255 = 77
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -283,9 +296,11 @@ class _SignupScreenState extends State<SignupScreen>
                                       const BorderSide(color: Colors.white),
                                 ),
                                 prefixIcon: Icon(Icons.lock_outline,
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white
+                                        .withAlpha(204)), // 0.8 * 255 = 204
                                 filled: true,
-                                fillColor: Colors.white.withOpacity(0.1),
+                                fillColor: Colors.white
+                                    .withAlpha(26), // 0.1 * 255 = 26
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {

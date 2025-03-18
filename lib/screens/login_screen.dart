@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  Future<void> _signInWithEmail() async {
+  Future<void> _signIn() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -70,8 +70,14 @@ class _LoginScreenState extends State<LoginScreen>
         _emailController.text.trim(),
         _passwordController.text,
       );
+
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/home');
+        // Check if email is verified
+        if (_authService.isEmailVerified) {
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          Navigator.pushReplacementNamed(context, '/email-verification');
+        }
       }
     } catch (e) {
       setState(() {
@@ -93,7 +99,16 @@ class _LoginScreenState extends State<LoginScreen>
     });
 
     try {
-      await _authService.signInWithGoogle();
+      // First try the original method
+      try {
+        await _authService.signInWithGoogle();
+      } catch (firstError) {
+        // If it fails, try the alternative method
+        print(
+            'First Google Sign-In method failed, trying alternative: $firstError');
+        await _authService.signInWithGoogleSimple();
+      }
+
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/home');
       }
@@ -137,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen>
                     height: 200,
                     width: 150,
                     alignment: Alignment.center,
-                    child: Icon(
+                    child: const Icon(
                       Icons.directions_run,
                       size: 120,
                       color: Colors.white,
@@ -160,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen>
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             // App logo
-                            Icon(
+                            const Icon(
                               Icons.directions_run,
                               size: 64,
                               color: Colors.white,
@@ -187,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen>
                               'Push your limits',
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withAlpha(204),
                                 fontStyle: FontStyle.italic,
                               ),
                               textAlign: TextAlign.center,
@@ -216,16 +231,16 @@ class _LoginScreenState extends State<LoginScreen>
                               decoration: InputDecoration(
                                 labelText: 'Email',
                                 labelStyle: TextStyle(
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white.withAlpha(204)),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white.withAlpha(77)),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white.withAlpha(77)),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -233,9 +248,9 @@ class _LoginScreenState extends State<LoginScreen>
                                       const BorderSide(color: Colors.white),
                                 ),
                                 prefixIcon: Icon(Icons.email,
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white.withAlpha(204)),
                                 filled: true,
-                                fillColor: Colors.white.withOpacity(0.1),
+                                fillColor: Colors.white.withAlpha(26),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -258,16 +273,16 @@ class _LoginScreenState extends State<LoginScreen>
                               decoration: InputDecoration(
                                 labelText: 'Password',
                                 labelStyle: TextStyle(
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white.withAlpha(204)),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white.withAlpha(77)),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3)),
+                                      color: Colors.white.withAlpha(77)),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -275,9 +290,9 @@ class _LoginScreenState extends State<LoginScreen>
                                       const BorderSide(color: Colors.white),
                                 ),
                                 prefixIcon: Icon(Icons.lock,
-                                    color: Colors.white.withOpacity(0.8)),
+                                    color: Colors.white.withAlpha(204)),
                                 filled: true,
-                                fillColor: Colors.white.withOpacity(0.1),
+                                fillColor: Colors.white.withAlpha(26),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -309,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen>
 
                             // Sign in button
                             ElevatedButton(
-                              onPressed: _isLoading ? null : _signInWithEmail,
+                              onPressed: _isLoading ? null : _signIn,
                               style: ElevatedButton.styleFrom(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 16),
@@ -355,7 +370,7 @@ class _LoginScreenState extends State<LoginScreen>
                                 ),
                                 foregroundColor: Colors.white,
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
@@ -363,8 +378,8 @@ class _LoginScreenState extends State<LoginScreen>
                                     size: 24,
                                     color: Colors.white,
                                   ),
-                                  const SizedBox(width: 8),
-                                  const Text(
+                                  SizedBox(width: 8),
+                                  Text(
                                     'SIGN IN WITH GOOGLE',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,

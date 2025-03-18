@@ -7,10 +7,13 @@ import 'package:logging/logging.dart';
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
+    scopes: [
+      'email',
+      'profile',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/userinfo.email'
+    ],
     signInOption: SignInOption.standard,
-    clientId:
-        '529539616962-ltq50c056unk3s7vma995na1jd5f9616.apps.googleusercontent.com', // Web client ID from Google Cloud Console
   );
   final _storage = const FlutterSecureStorage();
   final _log = Logger('AuthService');
@@ -20,6 +23,9 @@ class AuthService extends ChangeNotifier {
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  // Check if user's email is verified
+  bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
+
   // Sign up with email and password
   Future<UserCredential> signUpWithEmail(String email, String password) async {
     try {
@@ -27,11 +33,42 @@ class AuthService extends ChangeNotifier {
         email: email,
         password: password,
       );
+
+      // Send email verification
+      await sendEmailVerification();
+
       notifyListeners();
       return result;
     } catch (e) {
       _log.warning('Email sign-up failed', e);
       throw _handleAuthException(e as FirebaseAuthException);
+    }
+  }
+
+  // Send email verification
+  Future<void> sendEmailVerification() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+      }
+    } catch (e) {
+      _log.warning('Failed to send verification email', e);
+      throw 'Failed to send verification email: ${e.toString()}';
+    }
+  }
+
+  // Check if email is verified and refresh user
+  Future<bool> checkEmailVerified() async {
+    try {
+      // Reload user data to get the latest verification status
+      await _auth.currentUser?.reload();
+      final isVerified = _auth.currentUser?.emailVerified ?? false;
+      notifyListeners();
+      return isVerified;
+    } catch (e) {
+      _log.warning('Failed to check email verification', e);
+      return false;
     }
   }
 
@@ -54,31 +91,69 @@ class AuthService extends ChangeNotifier {
   // Sign in with Google
   Future<UserCredential> signInWithGoogle() async {
     try {
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        // For Android, use a direct Firebase Auth approach
+        _log.info('Using direct Firebase Auth approach for Android');
 
-      if (googleUser == null) {
-        throw 'Google sign in aborted';
+        // Create Google Auth Provider
+        final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        googleProvider.addScope('email');
+        googleProvider.addScope('profile');
+
+        // Try to sign in directly with Firebase
+        final result = await _auth.signInWithProvider(googleProvider);
+
+        notifyListeners();
+        await _storage.write(key: 'uid', value: result.user?.uid);
+        return result;
+      } else {
+        // Use regular Google Sign-In for other platforms
+        // Trigger the authentication flow
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+        if (googleUser == null) {
+          throw 'Google sign in aborted';
+        }
+
+        // Obtain the auth details from the request
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        // Create a new credential
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        // Sign in to Firebase with the credential
+        final result = await _auth.signInWithCredential(credential);
+        notifyListeners();
+        await _storage.write(key: 'uid', value: result.user?.uid);
+
+        return result;
       }
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      // Sign in to Firebase with the credential
-      final result = await _auth.signInWithCredential(credential);
-      notifyListeners();
-      await _storage.write(key: 'uid', value: result.user?.uid);
-
-      return result;
     } catch (e) {
       _log.warning('Google sign-in failed', e);
+      throw 'Failed to sign in with Google: ${e.toString()}';
+    }
+  }
+
+  // Simple Google sign in (alternative implementation)
+  Future<UserCredential> signInWithGoogleSimple() async {
+    try {
+      // The signInWithGoogle method in FirebaseAuth uses a different approach
+      // that might bypass some of the People API restrictions
+      final googleProvider = GoogleAuthProvider();
+      googleProvider.addScope('email');
+      googleProvider.addScope('profile');
+
+      // On Android/iOS, this will use the native Google Sign-In flow
+      final result = await _auth.signInWithPopup(googleProvider);
+      notifyListeners();
+      await _storage.write(key: 'uid', value: result.user?.uid);
+      return result;
+    } catch (e) {
+      _log.warning('Simple Google sign-in failed', e);
       throw 'Failed to sign in with Google: ${e.toString()}';
     }
   }
